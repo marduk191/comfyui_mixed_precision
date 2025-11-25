@@ -1,0 +1,193 @@
+{
+  "last_node_id": 5,
+  "last_link_id": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MixedPrecisionModelLoader",
+      "pos": [50, 50],
+      "size": {"0": 315, "1": 98},
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [1, 4],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MixedPrecisionModelLoader"
+      },
+      "widgets_values": [
+        "model.safetensors",
+        "fp32",
+        "none"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MixedPrecisionConfig",
+      "pos": [50, 200],
+      "size": {"0": 315, "1": 150},
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "QUANT_CONFIG",
+          "type": "QUANT_CONFIG",
+          "links": [2],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MixedPrecisionConfig"
+      },
+      "widgets_values": [
+        "int8",
+        128,
+        true,
+        1.0,
+        false
+      ]
+    },
+    {
+      "id": 3,
+      "type": "SmoothQuantize",
+      "pos": [450, 50],
+      "size": {"0": 315, "1": 174},
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "quant_config",
+          "type": "QUANT_CONFIG",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [3, 5],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "SMOOTH_INFO",
+          "type": "SMOOTH_INFO",
+          "links": [6],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SmoothQuantize"
+      },
+      "widgets_values": [
+        0.5,
+        true,
+        512
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 4,
+      "type": "MixedPrecisionModelSaver",
+      "pos": [850, 50],
+      "size": {"0": 315, "1": 98},
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MixedPrecisionModelSaver"
+      },
+      "widgets_values": [
+        "model_int8_smoothquant",
+        "safetensors"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "QuantizationAnalyzer",
+      "pos": [850, 200],
+      "size": {"0": 400, "1": 200},
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "original_model",
+          "type": "MODEL",
+          "link": 4
+        },
+        {
+          "name": "quantized_model",
+          "type": "MODEL",
+          "link": 5
+        },
+        {
+          "name": "quant_info",
+          "type": "AWQ_INFO,SMOOTH_INFO,SVD_INFO",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "QuantizationAnalyzer"
+      }
+    }
+  ],
+  "links": [
+    [1, 1, 0, 3, 0, "MODEL"],
+    [2, 2, 0, 3, 1, "QUANT_CONFIG"],
+    [3, 3, 0, 4, 0, "MODEL"],
+    [4, 1, 0, 5, 0, "MODEL"],
+    [5, 3, 0, 5, 1, "MODEL"],
+    [6, 3, 1, 5, 2, "SMOOTH_INFO"]
+  ],
+  "groups": [
+    {
+      "title": "SmoothQuant with Auto-Alpha",
+      "bounding": [25, -25, 1250, 475],
+      "color": "#3f789e",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.0,
+      "offset": [0, 0]
+    }
+  },
+  "version": 0.4,
+  "workflow_name": "SmoothQuant INT8",
+  "workflow_description": "Quantize a model to INT8 using SmoothQuant with automatic alpha tuning for optimal smoothing"
+}

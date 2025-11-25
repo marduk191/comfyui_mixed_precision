@@ -1,0 +1,170 @@
+{
+  "last_node_id": 5,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MixedPrecisionModelLoader",
+      "pos": [50, 50],
+      "size": {"0": 315, "1": 98},
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [1, 4],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MixedPrecisionModelLoader"
+      },
+      "widgets_values": [
+        "model.safetensors",
+        "fp32",
+        "none"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "SVDQuantize",
+      "pos": [450, 50],
+      "size": {"0": 315, "1": 222},
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [2, 5],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "SVD_INFO",
+          "type": "SVD_INFO",
+          "links": [3],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SVDQuantize"
+      },
+      "widgets_values": [
+        0.9,
+        0.1,
+        "fp16",
+        "int4",
+        true,
+        0.95,
+        ""
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 3,
+      "type": "MixedPrecisionModelSaver",
+      "pos": [850, 50],
+      "size": {"0": 315, "1": 98},
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        },
+        {
+          "name": "quantization_info",
+          "type": "AWQ_INFO,SMOOTH_INFO,SVD_INFO",
+          "link": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MixedPrecisionModelSaver"
+      },
+      "widgets_values": [
+        "model_svdq_compressed",
+        "safetensors"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "QuantizationAnalyzer",
+      "pos": [850, 200],
+      "size": {"0": 400, "1": 200},
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "original_model",
+          "type": "MODEL",
+          "link": 4
+        },
+        {
+          "name": "quantized_model",
+          "type": "MODEL",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "QuantizationAnalyzer"
+      }
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "MODEL"],
+    [2, 2, 0, 3, 0, "MODEL"],
+    [3, 2, 1, 3, 1, "SVD_INFO"],
+    [4, 1, 0, 4, 0, "MODEL"],
+    [5, 2, 0, 4, 1, "MODEL"]
+  ],
+  "groups": [
+    {
+      "title": "SVDQ: SVD-based Mixed Precision Quantization",
+      "bounding": [25, -25, 1275, 475],
+      "color": "#8A3F8F",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.0,
+      "offset": [0, 0]
+    },
+    "info": {
+      "name": "SVDQ Workflow",
+      "author": "ComfyUI Mixed Precision",
+      "description": "Compress model using SVD-based quantization with adaptive rank selection. High importance components use FP16, low importance use INT4.",
+      "version": "1.0",
+      "created": "2024-11-24"
+    }
+  },
+  "version": 0.4,
+  "workflow_name": "SVDQ Compression",
+  "workflow_description": "Aggressive model compression using SVD with mixed precision (FP16 for important components, INT4 for less important)"
+}

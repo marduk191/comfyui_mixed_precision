@@ -52,6 +52,24 @@ pip install -r requirements.txt
 
 3. Restart ComfyUI
 
+## Quick Start
+
+The easiest way to get started is with our example workflows:
+
+1. **Drag and drop** any workflow from the `examples/` folder into ComfyUI
+2. **Update** the model path in the loader node
+3. **Queue** the workflow
+
+### Example Workflows
+
+- 📦 **awq_int8_workflow.json** - Basic INT8 quantization (75% size reduction)
+- 🔄 **smoothquant_workflow.json** - SmoothQuant for transformers
+- 🗜️ **svdq_workflow.json** - SVD-based compression (85-90% reduction)
+- 🎯 **mixed_precision_layerwise_workflow.json** - FP16 attention + INT4 MLP
+- ⚡ **nf4_aggressive_workflow.json** - Maximum compression (87.5% reduction)
+
+See [examples/README.md](examples/README.md) for detailed workflow documentation.
+
 ## Node Reference
 
 ### Configuration Nodes
